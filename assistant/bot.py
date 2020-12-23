@@ -17,10 +17,14 @@ from . import Config, logging
 _LOG = logging.getLogger(__name__)
 START_TIME = time.time()
 
-bot = Client(":memory:",
-             api_id=Config.APP_ID,
-             api_hash=Config.API_HASH,
-             bot_token=Config.BOT_TOKEN,
-             plugins={'root': "assistant.plugins"}
+plugins = dict(root="assistant.plugins")
+bot = Client(
+     'Damien Soukara',
+      bot_token = Config.BOT_TOKEN,
+      api_id = Config.APP_ID,
+      api_hash = Config.API_HASH,
+      plugins = plugins
+)
+bot.run()
 
 _LOG.info("assistant-bot initialized!")
