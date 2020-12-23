@@ -25,6 +25,5 @@ bot = Client(
       api_hash = Config.API_HASH,
       plugins = plugins
 )
-bot.run()
 
 _LOG.info("assistant-bot initialized!")
