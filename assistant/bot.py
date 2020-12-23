@@ -21,6 +21,6 @@ bot = Client(":memory:",
              api_id=Config.APP_ID,
              api_hash=Config.API_HASH,
              bot_token=Config.BOT_TOKEN,
-             plugins={'root': "assistant.plugins"})
+             plugins={'root': "assistant.plugins"}
 
 _LOG.info("assistant-bot initialized!")
