@@ -7,8 +7,7 @@
 # All rights reserved.
 
 from pyrogram import filters
-from pyrogram.types import (
-    Message, InlineKeyboardMarkup, InlineKeyboardButton)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from assistant import bot, cus_filters
 
@@ -21,16 +20,11 @@ async def _rules(_, message: Message):
     else:
         msg_id = message.message_id
     markup = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    text="Read Rules",
-                    url="https://t.me/usergeot/537063"
-                )
-            ]
-        ]
+        [[InlineKeyboardButton(text="Read Rules", url="https://t.me/usergeot/537063")]]
     )
-    await bot.send_message(chat_id=message.chat.id,
-                           text="**⚠️ Here Our RULES ⚠️**",
-                           reply_to_message_id=msg_id,
-                           reply_markup=markup)
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text="**⚠️ Here Our RULES ⚠️**",
+        reply_to_message_id=msg_id,
+        reply_markup=markup,
+    )

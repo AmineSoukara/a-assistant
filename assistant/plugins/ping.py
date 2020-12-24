@@ -17,7 +17,7 @@ from assistant import bot, cus_filters
 @bot.on_message(filters.command("ping") & cus_filters.auth_chats)
 async def _ping(_, message: Message):
     start = datetime.now()
-    replied = await message.reply('`Pong!`')
+    replied = await message.reply("`Pong!`")
     end = datetime.now()
     m_s = (end - start).microseconds / 1000
     await replied.edit(f"**Pong!**\n`{m_s} ms`")

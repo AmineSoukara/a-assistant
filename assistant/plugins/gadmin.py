@@ -6,38 +6,49 @@
 #
 # All rights reserved.
 
-import time
 import asyncio
+import time
 
 from pyrogram import filters
-from pyrogram.types import Message, ChatPermissions
 from pyrogram.errors import (
-    FloodWait, UserAdminInvalid, UsernameInvalid, PeerIdInvalid, UserIdInvalid)
+    FloodWait,
+    PeerIdInvalid,
+    UserAdminInvalid,
+    UserIdInvalid,
+    UsernameInvalid,
+)
+from pyrogram.types import ChatPermissions, Message
 
 from assistant import bot, cus_filters
 from assistant.utils import (
-    is_dev, is_self, is_admin,
-    sed_sticker, check_rights,
-    check_bot_rights, extract_time)
+    check_bot_rights,
+    check_rights,
+    extract_time,
+    is_admin,
+    is_dev,
+    is_self,
+    sed_sticker,
+)
 
 
 @bot.on_message(
-    filters.command("ban") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("ban") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _ban_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
         return
     cmd = len(msg.text)
     replied = msg.reply_to_message
-    reason = ''
+    reason = ""
     if replied:
         id_ = replied.from_user.id
         if cmd > 4:
             _, reason = msg.text.split(maxsplit=1)
     elif cmd > 4:
         _, args = msg.text.split(maxsplit=1)
-        if ' ' in args:
-            id_, reason = args.split(' ', maxsplit=1)
+        if " " in args:
+            id_, reason = args.split(" ", maxsplit=1)
         else:
             id_ = args
     else:
@@ -66,16 +77,14 @@ async def _ban_user(_, msg: Message):
     sent = await msg.reply("`Trying to Ban User.. Hang on!! ⏳`")
     try:
         await bot.kick_chat_member(chat_id, user_id)
-        await sent.edit(
-            f"#BAN\n"
-            f"USER: {mention}\n"
-            f"REASON: `{reason or None}`")
+        await sent.edit(f"#BAN\n" f"USER: {mention}\n" f"REASON: `{reason or None}`")
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong! 🤔`\n\n**ERROR:** `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("tban") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("tban") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _tban_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
@@ -90,20 +99,20 @@ async def _tban_user(_, msg: Message):
         _, args = msg.text.split(maxsplit=1)
     elif cmd > 5:
         _, text = msg.text.split(maxsplit=1)
-        if ' ' in text:
-            id_, args = text.split(' ', maxsplit=1)
+        if " " in text:
+            id_, args = text.split(" ", maxsplit=1)
         else:
             await msg.reply("`Time limit not found.`")
     else:
         await msg.reply("`No valid User_id or message specified.`")
         return
-    if ' ' in args:
+    if " " in args:
         split = args.split(None, 1)
         time_val = split[0].lower()
         reason = split[1]
     else:
         time_val = args
-        reason = ''
+        reason = ""
 
     time_ = await extract_time(msg, time_val)
     if not time_:
@@ -130,20 +139,21 @@ async def _tban_user(_, msg: Message):
         return
     sent = await msg.reply("`Trying to Ban User.. Hang on!! ⏳`")
     try:
-        await bot.kick_chat_member(
-            chat_id, user_id, time_)
+        await bot.kick_chat_member(chat_id, user_id, time_)
         await asyncio.sleep(1)
         await sent.edit(
             f"#TEMP_BAN\n"
             f"USER: {mention}\n"
             f"TIME: `{time_val}`\n"
-            f"REASON: `{reason or None}`")
+            f"REASON: `{reason or None}`"
+        )
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong 🤔`\n\n**ERROR**: `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("unban") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("unban") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _unban_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
@@ -179,22 +189,23 @@ async def _unban_user(_, msg: Message):
 
 
 @bot.on_message(
-    filters.command("kick") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("kick") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _kick_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
         return
     cmd = len(msg.text)
     replied = msg.reply_to_message
-    reason = ''
+    reason = ""
     if replied:
         id_ = replied.from_user.id
         if cmd > 5:
             _, reason = msg.text.split(maxsplit=1)
     elif cmd > 5:
         _, args = msg.text.split(maxsplit=1)
-        if ' ' in args:
-            id_, reason = args.split(' ', maxsplit=1)
+        if " " in args:
+            id_, reason = args.split(" ", maxsplit=1)
         else:
             id_ = args
     else:
@@ -223,16 +234,14 @@ async def _kick_user(_, msg: Message):
     sent = await msg.reply("`Trying to Kick User.. Hang on!! ⏳`")
     try:
         await bot.kick_chat_member(chat_id, user_id, int(time.time() + 60))
-        await sent.edit(
-            "#KICK\n"
-            f"USER: {mention}\n"
-            f"REASON: `{reason or None}`")
+        await sent.edit("#KICK\n" f"USER: {mention}\n" f"REASON: `{reason or None}`")
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong! 🤔`\n\n**ERROR:** `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("promote") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("promote") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _promote_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_promote_members"):
@@ -261,19 +270,23 @@ async def _promote_user(_, msg: Message):
         return
     sent = await msg.reply("`Trying to Promote User.. Hang on!! ⏳`")
     try:
-        await bot.promote_chat_member(chat_id, user_id,
-                                      can_change_info=True,
-                                      can_delete_messages=True,
-                                      can_restrict_members=True,
-                                      can_invite_users=True,
-                                      can_pin_messages=True)
+        await bot.promote_chat_member(
+            chat_id,
+            user_id,
+            can_change_info=True,
+            can_delete_messages=True,
+            can_restrict_members=True,
+            can_invite_users=True,
+            can_pin_messages=True,
+        )
         await sent.edit("`👑 Promoted Successfully..`")
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong! 🤔`\n\n**ERROR:** `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("demote") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("demote") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _demote_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_promote_members"):
@@ -305,34 +318,38 @@ async def _demote_user(_, msg: Message):
         return
     sent = await msg.reply("`Trying to Demote User.. Hang on!! ⏳`")
     try:
-        await bot.promote_chat_member(chat_id, user_id,
-                                      can_change_info=False,
-                                      can_delete_messages=False,
-                                      can_restrict_members=False,
-                                      can_invite_users=False,
-                                      can_pin_messages=False)
+        await bot.promote_chat_member(
+            chat_id,
+            user_id,
+            can_change_info=False,
+            can_delete_messages=False,
+            can_restrict_members=False,
+            can_invite_users=False,
+            can_pin_messages=False,
+        )
         await sent.edit("`🛡 Demoted Successfully..`")
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong! 🤔`\n\n**ERROR:** `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("mute") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("mute") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _mute_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
         return
     cmd = len(msg.text)
     replied = msg.reply_to_message
-    reason = ''
+    reason = ""
     if replied:
         id_ = replied.from_user.id
         if cmd > 5:
             _, reason = msg.text.split(maxsplit=1)
     elif cmd > 5:
         _, args = msg.text.split(maxsplit=1)
-        if ' ' in args:
-            id_, reason = args.split(' ', maxsplit=1)
+        if " " in args:
+            id_, reason = args.split(" ", maxsplit=1)
         else:
             id_ = args
     else:
@@ -366,13 +383,15 @@ async def _mute_user(_, msg: Message):
             f"#MUTE\n"
             f"USER: {mention}\n"
             f"TIME: `Forever`\n"
-            f"REASON: `{reason or None}`")
+            f"REASON: `{reason or None}`"
+        )
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong 🤔`\n\n**ERROR**: `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("tmute") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("tmute") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _tmute_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
@@ -387,20 +406,20 @@ async def _tmute_user(_, msg: Message):
         _, args = msg.text.split(maxsplit=1)
     elif cmd > 6:
         _, text = msg.text.split(maxsplit=1)
-        if ' ' in text:
-            id_, args = text.split(' ', maxsplit=1)
+        if " " in text:
+            id_, args = text.split(" ", maxsplit=1)
         else:
             await msg.reply("`Time limit not found.`")
     else:
         await msg.reply("`No valid User_id or message specified.`")
         return
-    if ' ' in args:
+    if " " in args:
         split = args.split(None, 1)
         time_val = split[0].lower()
         reason = split[1]
     else:
         time_val = args
-        reason = ''
+        reason = ""
 
     time_ = await extract_time(msg, time_val)
     if not time_:
@@ -427,20 +446,21 @@ async def _tmute_user(_, msg: Message):
         return
     sent = await msg.reply("`Trying to Mute User.. Hang on!! ⏳`")
     try:
-        await bot.restrict_chat_member(
-            chat_id, user_id, ChatPermissions(), time_)
+        await bot.restrict_chat_member(chat_id, user_id, ChatPermissions(), time_)
         await asyncio.sleep(1)
         await sent.edit(
             f"#TEMP_MUTE\n"
             f"USER: {mention}\n"
             f"TIME: `{time_val}`\n"
-            f"REASON: `{reason or None}`")
+            f"REASON: `{reason or None}`"
+        )
     except Exception as e_f:  # pylint: disable=broad-except
         await sent.edit(f"`Something went wrong 🤔`\n\n**ERROR**: `{e_f}`")
 
 
 @bot.on_message(
-    filters.command("unmute") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("unmute") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _unmute_user(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_restrict_members"):
@@ -476,7 +496,8 @@ async def _unmute_user(_, msg: Message):
 
 
 @bot.on_message(
-    filters.command("zombies") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("zombies") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _zombie_clean(_, msg: Message):
     chat_id = msg.chat.id
     if "clean" in msg.text.lower():
@@ -485,12 +506,15 @@ async def _zombie_clean(_, msg: Message):
         del_total = 0
         del_stats = r"`Zero zombie accounts found in this chat... WOOHOO group is clean.. \^o^/`"
         if await check_bot_rights(chat_id, "can_restrict_members"):
-            sent = await msg.reply("`Hang on!! cleaning zombie accounts from this chat..`")
+            sent = await msg.reply(
+                "`Hang on!! cleaning zombie accounts from this chat..`"
+            )
             async for member in bot.iter_chat_members(chat_id):
                 if member.user.is_deleted:
                     try:
                         await bot.kick_chat_member(
-                            chat_id, member.user.id, int(time.time() + 45))
+                            chat_id, member.user.id, int(time.time() + 45)
+                        )
                     except UserAdminInvalid:
                         del_users -= 1
                         del_admins += 1
@@ -518,14 +542,14 @@ async def _zombie_clean(_, msg: Message):
                 del_users += 1
         if del_users > 0:
             del_stats = f"`Found` **{del_users}** `zombie accounts in this chat.`"
-            await sent.edit(
-                f"🕵️‍♂️ {del_stats} `you can clean them using .zombies -c`")
+            await sent.edit(f"🕵️‍♂️ {del_stats} `you can clean them using .zombies -c`")
         else:
             await sent.edit(f"{del_stats}")
 
 
 @bot.on_message(
-    filters.command("pin") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("pin") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _pin(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_pin_messages"):
@@ -541,8 +565,7 @@ async def _pin(_, msg: Message):
     msg_id = replied.message_id
     if "silent" in msg.text.lower():
         try:
-            await bot.pin_chat_message(
-                chat_id, msg_id, disable_notification=True)
+            await bot.pin_chat_message(chat_id, msg_id, disable_notification=True)
         except Exception as e_f:  # pylint: disable=broad-except
             await msg.reply(f"`Something went wrong! 🤔`\n\n**ERROR:** `{e_f}`")
     else:
@@ -553,7 +576,8 @@ async def _pin(_, msg: Message):
 
 
 @bot.on_message(
-    filters.command("unpin") & cus_filters.auth_chats & cus_filters.auth_users)
+    filters.command("unpin") & cus_filters.auth_chats & cus_filters.auth_users
+)
 async def _unpin(_, msg: Message):
     chat_id = msg.chat.id
     if not await check_rights(chat_id, msg.from_user.id, "can_pin_messages"):

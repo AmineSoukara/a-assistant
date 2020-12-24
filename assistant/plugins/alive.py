@@ -6,13 +6,13 @@
 #
 # All rights reserved.
 
-import time
 import random
+import time
 
 from pyrogram import filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors.exceptions import FileIdInvalid, FileReferenceEmpty
 from pyrogram.errors.exceptions.bad_request_400 import BadRequest
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from assistant import bot, cus_filters, versions
 from assistant.bot import START_TIME
@@ -33,7 +33,7 @@ async def _alive(_, message: Message):
 
 async def _refresh_data():
     LOGO_DATA.clear()
-    for msg in await bot.get_messages('UserGeOt', MSG_IDS):
+    for msg in await bot.get_messages("UserGeOt", MSG_IDS):
         if not msg.animation:
             continue
         gif = msg.animation
@@ -53,17 +53,22 @@ async def _sendit(chat_id):
             [
                 InlineKeyboardButton(
                     text="License",
-                    url=("https://github.com/"
-                         "UsergeTeam/Userge-Assistant/blob/master/LICENSE")),
+                    url=(
+                        "https://github.com/"
+                        "UsergeTeam/Userge-Assistant/blob/master/LICENSE"
+                    ),
+                ),
                 InlineKeyboardButton(
-                    text="Repo",
-                    url="https://github.com/UsergeTeam/Userge-Assistant")
+                    text="Repo", url="https://github.com/UsergeTeam/Userge-Assistant"
+                ),
             ]
         ]
     )
     file_id, file_ref = random.choice(LOGO_DATA)
-    await bot.send_animation(chat_id=chat_id,
-                             animation=file_id,
-                             file_ref=file_ref,
-                             caption=caption,
-                             reply_markup=button)
+    await bot.send_animation(
+        chat_id=chat_id,
+        animation=file_id,
+        file_ref=file_ref,
+        caption=caption,
+        reply_markup=button,
+    )

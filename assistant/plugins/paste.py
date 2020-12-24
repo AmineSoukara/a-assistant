@@ -13,7 +13,7 @@ from aiohttp import ClientResponseError, ServerTimeoutError, TooManyRedirects
 from pyrogram import filters
 from pyrogram.types import Message
 
-from assistant import bot, cus_filters, Config
+from assistant import Config, bot, cus_filters
 
 DOGBIN_URL = "https://del.dog/"
 NEKOBIN_URL = "https://nekobin.com/"
@@ -29,11 +29,16 @@ async def dogbin_paste(_, message: Message):
         _, args = message.text.split(maxsplit=1)
         text = args
     replied = message.reply_to_message
-    file_ext = '.txt'
-    if not cmd > 6 and replied and replied.document and replied.document.file_size < 2 ** 20 * 10:
+    file_ext = ".txt"
+    if (
+        not cmd > 6
+        and replied
+        and replied.document
+        and replied.document.file_size < 2 ** 20 * 10
+    ):
         file_ext = os.path.splitext(replied.document.file_name)[1]
         path = await replied.download("downloads/")
-        with open(path, 'r') as d_f:
+        with open(path, "r") as d_f:
             text = d_f.read()
         os.remove(path)
     elif not cmd > 6 and replied and replied.text:
@@ -43,14 +48,18 @@ async def dogbin_paste(_, message: Message):
         return
     await msg.edit("`Pasting text...`")
     async with aiohttp.ClientSession() as ses:
-        async with ses.post(DOGBIN_URL + "documents", data=text.encode('utf-8')) as resp:
+        async with ses.post(
+            DOGBIN_URL + "documents", data=text.encode("utf-8")
+        ) as resp:
             if resp.status == 200:
                 response = await resp.json()
-                key = response['key']
+                key = response["key"]
                 final_url = DOGBIN_URL + key
-                if response['isUrl']:
-                    reply_text = (f"**Shortened** [URL]({final_url})\n"
-                                  f"**Dogbin** [URL]({DOGBIN_URL}v/{key})")
+                if response["isUrl"]:
+                    reply_text = (
+                        f"**Shortened** [URL]({final_url})\n"
+                        f"**Dogbin** [URL]({DOGBIN_URL}v/{key})"
+                    )
                 else:
                     reply_text = f"**Dogbin** [URL]({final_url}{file_ext})"
                 await msg.edit(reply_text, disable_web_page_preview=True)
@@ -68,11 +77,16 @@ async def nekobin_paste(_, message: Message):
         _, args = message.text.split(maxsplit=1)
         text = args
     replied = message.reply_to_message
-    file_ext = '.txt'
-    if not cmd > 5 and replied and replied.document and replied.document.file_size < 2 ** 20 * 10:
+    file_ext = ".txt"
+    if (
+        not cmd > 5
+        and replied
+        and replied.document
+        and replied.document.file_size < 2 ** 20 * 10
+    ):
         file_ext = os.path.splitext(replied.document.file_name)[1]
         path = await replied.download("downloads/")
-        with open(path, 'r') as d_f:
+        with open(path, "r") as d_f:
             text = d_f.read()
         os.remove(path)
     elif not cmd > 5 and replied and replied.text:
@@ -82,10 +96,12 @@ async def nekobin_paste(_, message: Message):
         return
     await msg.edit("`Pasting text...`")
     async with aiohttp.ClientSession() as ses:
-        async with ses.post(NEKOBIN_URL + "api/documents", json={"content": text}) as resp:
+        async with ses.post(
+            NEKOBIN_URL + "api/documents", json={"content": text}
+        ) as resp:
             if resp.status == 201:
                 response = await resp.json()
-                key = response['result']['key']
+                key = response["result"]["key"]
                 final_url = NEKOBIN_URL + key + file_ext
                 reply_text = f"**Nekobin** [URL]({final_url})"
                 await msg.edit(reply_text, disable_web_page_preview=True)
@@ -102,22 +118,22 @@ async def get_paste_(_, message: Message):
     _, args = message.text.split(maxsplit=1)
     link = args
     msg = await message.reply("`Getting paste content...`")
-    format_view = f'{DOGBIN_URL}v/'
+    format_view = f"{DOGBIN_URL}v/"
     if link.startswith(format_view):
-        link = link[len(format_view):]
-        raw_link = f'{DOGBIN_URL}raw/{link}'
+        link = link[len(format_view) :]
+        raw_link = f"{DOGBIN_URL}raw/{link}"
     elif link.startswith(DOGBIN_URL):
-        link = link[len(DOGBIN_URL):]
-        raw_link = f'{DOGBIN_URL}raw/{link}'
+        link = link[len(DOGBIN_URL) :]
+        raw_link = f"{DOGBIN_URL}raw/{link}"
     elif link.startswith("del.dog/"):
-        link = link[len("del.dog/"):]
-        raw_link = f'{DOGBIN_URL}raw/{link}'
+        link = link[len("del.dog/") :]
+        raw_link = f"{DOGBIN_URL}raw/{link}"
     elif link.startswith(NEKOBIN_URL):
-        link = link[len(NEKOBIN_URL):]
-        raw_link = f'{NEKOBIN_URL}raw/{link}'
+        link = link[len(NEKOBIN_URL) :]
+        raw_link = f"{NEKOBIN_URL}raw/{link}"
     elif link.startswith("nekobin.com/"):
-        link = link[len("nekobin.com/"):]
-        raw_link = f'{NEKOBIN_URL}raw/{link}'
+        link = link[len("nekobin.com/") :]
+        raw_link = f"{NEKOBIN_URL}raw/{link}"
     else:
         await msg.edit("`Is that even a paste url?`")
         return
@@ -128,13 +144,16 @@ async def get_paste_(_, message: Message):
         except ServerTimeoutError as e_r:
             await msg.edit(f"`Request timed out -> {e_r}`")
         except TooManyRedirects as e_r:
-            await msg.edit("`Request exceeded the configured `"
-                           f"`number of maximum redirections -> {e_r}`")
+            await msg.edit(
+                "`Request exceeded the configured `"
+                f"`number of maximum redirections -> {e_r}`"
+            )
         except ClientResponseError as e_r:
             await msg.edit(f"`Request returned an unsuccessful status code -> {e_r}`")
         else:
             if len(text) > Config.MAX_MSG_LENGTH:
                 await msg.edit("`Content Too Large...`")
             else:
-                await msg.edit("--Fetched Content Successfully!--"
-                               f"\n\n**Content** :\n`{text}`")
+                await msg.edit(
+                    "--Fetched Content Successfully!--" f"\n\n**Content** :\n`{text}`"
+                )

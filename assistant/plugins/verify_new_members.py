@@ -9,17 +9,20 @@
 import asyncio
 
 from pyrogram import filters
-from pyrogram.types import (
-    Message, ChatPermissions, CallbackQuery,
-    InlineKeyboardMarkup, InlineKeyboardButton)
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
+from pyrogram.types import (
+    CallbackQuery,
+    ChatPermissions,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 
 from assistant import bot, cus_filters
 from assistant.utils import check_bot_rights
 
 
-@bot.on_message(
-    filters.group & filters.new_chat_members & cus_filters.auth_chats)
+@bot.on_message(filters.group & filters.new_chat_members & cus_filters.auth_chats)
 async def _verify_msg_(_, msg: Message):
     """ Verify Msg for New chat Members """
     chat_id = msg.chat.id
@@ -33,8 +36,7 @@ async def _verify_msg_(_, msg: Message):
         if member.is_bot or not await check_bot_rights(chat_id, "can_restrict_members"):
             file_id, file_ref, text, buttons = await wc_msg(member)
             reply = await msg.reply_animation(
-                animation=file_id, file_ref=file_ref,
-                caption=text, reply_markup=buttons
+                animation=file_id, file_ref=file_ref, caption=text, reply_markup=buttons
             )
             await asyncio.sleep(120)
             await reply.delete()
@@ -58,7 +60,8 @@ To Chat here, Please click on the button below. """
             [
                 InlineKeyboardButton(
                     text="Verify now 🤖",
-                    callback_data=f"verify_cq({user.id} {msg.message_id})")
+                    callback_data=f"verify_cq({user.id} {msg.message_id})",
+                )
             ]
         ]
     )
@@ -73,12 +76,11 @@ __Click on Join Now and Unmute yourself.__ """
     button = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(
-                    text="Join Now",
-                    url="https://t.me/TheUserGe"),
+                InlineKeyboardButton(text="Join Now", url="https://t.me/TheUserGe"),
                 InlineKeyboardButton(
                     text="Unmute Me",
-                    callback_data=f"joined_unmute({user.id} {msg.message_id})")
+                    callback_data=f"joined_unmute({user.id} {msg.message_id})",
+                ),
             ]
         ]
     )
@@ -93,21 +95,14 @@ async def wc_msg(user):
     text = f""" **Welcome** {user.mention},
 __Check out the Button below. and feel free to ask here.__ 🤘 """
     buttons = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    text="More info.",
-                    url="https://t.me/usergeot/637843"
-                )
-            ]
-        ]
+        [[InlineKeyboardButton(text="More info.", url="https://t.me/usergeot/637843")]]
     )
     return file_id, file_ref, text, buttons
 
 
 @bot.on_callback_query(filters.regex(pattern=r"verify_cq\((.+?)\)"))
 async def _verify_user_(_, c_q: CallbackQuery):
-    _a, _b = c_q.matches[0].group(1).split(' ', maxsplit=1)
+    _a, _b = c_q.matches[0].group(1).split(" ", maxsplit=1)
     user_id = int(_a)
     msg_id = int(_b)
     if c_q.from_user.id == user_id:
@@ -118,8 +113,9 @@ async def _verify_user_(_, c_q: CallbackQuery):
             c_q.message.chat.id,
             animation=file_id,
             file_ref=file_ref,
-            caption=text, reply_markup=buttons,
-            reply_to_message_id=msg_id
+            caption=text,
+            reply_markup=buttons,
+            reply_to_message_id=msg_id,
         )
         await asyncio.sleep(120)
         await msg.delete()
@@ -131,7 +127,7 @@ async def _verify_user_(_, c_q: CallbackQuery):
 async def _on_joined_unmute_(_, c_q: CallbackQuery):
     if not c_q.message.chat:
         return
-    _a, _b = c_q.matches[0].group(1).split(' ', maxsplit=1)
+    _a, _b = c_q.matches[0].group(1).split(" ", maxsplit=1)
     user_id = int(_a)
     msg_id = int(_b)
     bot_id = (await bot.get_me()).id
@@ -147,7 +143,9 @@ async def _on_joined_unmute_(_, c_q: CallbackQuery):
             except UserNotParticipant:
                 await c_q.answer(
                     "Click on Join Now button to Join our Updates Channel"
-                    " and click on Unmute me Button again.", show_alert=True)
+                    " and click on Unmute me Button again.",
+                    show_alert=True,
+                )
             else:
                 await c_q.message.delete()
                 await bot.unban_chat_member(c_q.message.chat.id, user_id)
@@ -156,15 +154,16 @@ async def _on_joined_unmute_(_, c_q: CallbackQuery):
                     c_q.message.chat.id,
                     animation=f_d,
                     file_ref=f_r,
-                    caption=txt, reply_markup=btns,
-                    reply_to_message_id=msg_id
+                    caption=txt,
+                    reply_markup=btns,
+                    reply_to_message_id=msg_id,
                 )
                 await asyncio.sleep(120)
                 await msg.delete()
         else:
             await c_q.answer(
                 "Admins Muted you for another reason, I Can't unmute you.",
-                show_alert=True)
+                show_alert=True,
+            )
     else:
-        await c_q.answer(
-            f"This Message is Only for {user.first_name}", show_alert=True)
+        await c_q.answer(f"This Message is Only for {user.first_name}", show_alert=True)

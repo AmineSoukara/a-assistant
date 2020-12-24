@@ -10,6 +10,7 @@ import time
 
 from pyrogram import filters
 from pyrogram.types import Message
+
 from assistant import bot, cus_filters
 
 DATA = {}
@@ -19,29 +20,27 @@ WARN_LIMIT = 5
 MIN_DELAY = 3
 
 
-@bot.on_message(filters.incoming & ~filters.edited & cus_filters.auth_chats &
-                ~cus_filters.auth_users & ~cus_filters.whitelist_chats, group=1)
+@bot.on_message(
+    filters.incoming
+    & ~filters.edited
+    & cus_filters.auth_chats
+    & ~cus_filters.auth_users
+    & ~cus_filters.whitelist_chats,
+    group=1,
+)
 async def _flood(_, message: Message):
     chat_flood = DATA.get(message.chat.id)
     if chat_flood is None:
-        data = {
-            'user_id': message.from_user.id,
-            'time': time.time(),
-            'count': 1
-        }
+        data = {"user_id": message.from_user.id, "time": time.time(), "count": 1}
         DATA[message.chat.id] = data
         return
     cur_user = message.from_user.id
-    if cur_user != chat_flood['user_id']:
-        data = {
-            'user_id': cur_user,
-            'time': time.time(),
-            'count': 1
-        }
+    if cur_user != chat_flood["user_id"]:
+        data = {"user_id": cur_user, "time": time.time(), "count": 1}
         DATA[message.chat.id] = data
         return
-    prev_count = chat_flood['count']
-    prev_time = chat_flood['time']
+    prev_count = chat_flood["count"]
+    prev_time = chat_flood["time"]
     if (time.time() - prev_time) < MIN_DELAY:
         count = prev_count + 1
         if count >= MSG_LIMIT:
@@ -51,5 +50,5 @@ async def _flood(_, message: Message):
             await message.reply("**WARN**\n `Flood Detected !`")
     else:
         count = 1
-    DATA[message.chat.id] = {'user_id': cur_user, 'time': time.time(), 'count': count}
+    DATA[message.chat.id] = {"user_id": cur_user, "time": time.time(), "count": count}
     message.continue_propagation()

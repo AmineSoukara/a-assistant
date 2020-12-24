@@ -9,8 +9,8 @@
 from pyrogram import filters
 from pyrogram.types import Message
 
-from assistant import bot, cus_filters, Config
-from assistant.utils import is_self, is_admin, is_dev
+from assistant import Config, bot, cus_filters
+from assistant.utils import is_admin, is_dev, is_self
 
 
 @bot.on_message(filters.command("report") & cus_filters.auth_chats)

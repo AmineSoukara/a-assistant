@@ -7,8 +7,7 @@
 # All rights reserved.
 
 from pyrogram import filters
-from pyrogram.types import (
-    Message, InlineKeyboardMarkup, InlineKeyboardButton)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from assistant import bot
 from assistant.utils.docs import HELP
@@ -20,14 +19,15 @@ async def _start_(_, msg: Message):
         HELP,
         disable_web_page_preview=True,
         parse_mode="markdown",
-        reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                "🗂 Source Code",
-                url="https://github.com/UserGeTeam/UserGe-Assistant"
-            ),
-            InlineKeyboardButton(
-                "😎 Use Inline!",
-                switch_inline_query=""
-            )
-        ]])
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "🗂 Source Code",
+                        url="https://github.com/UserGeTeam/UserGe-Assistant",
+                    ),
+                    InlineKeyboardButton("😎 Use Inline!", switch_inline_query=""),
+                ]
+            ]
+        ),
     )

@@ -7,8 +7,7 @@
 # All rights reserved.
 
 from pyrogram import filters
-from pyrogram.types import (
-    Message, InlineKeyboardMarkup, InlineKeyboardButton)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from assistant import bot, cus_filters
 
@@ -24,29 +23,27 @@ async def _rules(_, message: Message):
         [
             [
                 InlineKeyboardButton(
-                    text="Official Channel",
-                    url="https://t.me/TheUserGe"),
+                    text="Official Channel", url="https://t.me/TheUserGe"
+                ),
                 InlineKeyboardButton(
-                    text="Unofficial Help",
-                    url="https://t.me/UnofficialPluginsHelp")
+                    text="Unofficial Help", url="https://t.me/UnofficialPluginsHelp"
+                ),
             ],
             [
                 InlineKeyboardButton(
-                    text="Main Repo",
-                    url="https://github.com/UsergeTeam/UserGe"),
+                    text="Main Repo", url="https://github.com/UsergeTeam/UserGe"
+                ),
                 InlineKeyboardButton(
                     text="Plugins Repo",
-                    url="https://github.com/UsergeTeam/Userge-Plugins")
+                    url="https://github.com/UsergeTeam/Userge-Plugins",
+                ),
             ],
-            [
-                InlineKeyboardButton(
-                    text="Tutorial",
-                    url="https://t.me/usergeot/612003")
-            ]
+            [InlineKeyboardButton(text="Tutorial", url="https://t.me/usergeot/612003")],
         ]
     )
-    await bot.send_message(message.chat.id,
-                           text=("**Welcome**\n"
-                                 "__Check out our channels and Repo's 🤘__"),
-                           reply_to_message_id=msg_id,
-                           reply_markup=markup)
+    await bot.send_message(
+        message.chat.id,
+        text=("**Welcome**\n" "__Check out our channels and Repo's 🤘__"),
+        reply_to_message_id=msg_id,
+        reply_markup=markup,
+    )
